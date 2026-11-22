@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy
+
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        include:
+          - os: windows-latest
+            python: "3.13"
+          - os: macos-latest
+            python: "3.13"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python }}
+      - run: uv sync
+      - run: uv run pytest -v --cov=plcdiff --cov-report=term-missing
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv build
+      - run: uvx twine check dist/*
+      - name: Smoke test the wheel
+        run: |
+          uv venv /tmp/smoke
+          uv pip install --python /tmp/smoke dist/*.whl
+          /tmp/smoke/bin/plcdiff diff examples/conveyor_v1.L5X examples/conveyor_v2.L5X
+
+  action:
+    name: GitHub Action self-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Make a demo repository with two commits
+        run: |
+          git init -q -b main /tmp/demo
+          cd /tmp/demo
+          git config user.email ci@example.com
+          git config user.name ci
+          cp "$GITHUB_WORKSPACE/examples/conveyor_v1.L5X" Line1.L5X
+          git add . && git commit -qm v1
+          cp "$GITHUB_WORKSPACE/examples/conveyor_v2.L5X" Line1.L5X
+          git commit -qam v2
+      - id: plcdiff
+        uses: ./
+        with:
+          base: HEAD~1
+          head: HEAD
+          working-directory: /tmp/demo
+      - name: Check outputs
+        run: |
+          test "${{ steps.plcdiff.outputs.changed }}" = "true"
+          grep -q "Rung 4" "${{ steps.plcdiff.outputs.report }}"

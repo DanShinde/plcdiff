@@ -1,0 +1,73 @@
+name: plcdiff
+description: Rung-by-rung summary of PLC program changes (Rockwell L5X, PLCopen XML) in the job summary
+author: Dan Shinde
+branding:
+  icon: git-pull-request
+  color: blue
+
+inputs:
+  base:
+    description: Base revision (default: the pull request base, or the commit before the push)
+    required: false
+    default: ""
+  head:
+    description: Head revision (default: the pull request head, or the pushed commit)
+    required: false
+    default: ""
+  paths:
+    description: Space-separated paths to limit the diff to (default: whole repository)
+    required: false
+    default: ""
+  no-values:
+    description: Set to "true" to ignore tag value changes
+    required: false
+    default: "false"
+  working-directory:
+    description: Repository directory (default: the workspace)
+    required: false
+    default: "."
+  python-version:
+    description: Python used to run plcdiff
+    required: false
+    default: "3.12"
+
+outputs:
+  changed:
+    description: '"true" when PLC program changes were found'
+    value: ${{ steps.diff.outputs.changed }}
+  report:
+    description: Path of the Markdown report
+    value: ${{ steps.diff.outputs.report }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+    - name: Install plcdiff
+      shell: bash
+      run: python -m pip install --quiet "${{ github.action_path }}"
+    - id: diff
+      name: Diff PLC exports
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        BASE: ${{ inputs.base || github.event.pull_request.base.sha || github.event.before }}
+        HEAD: ${{ inputs.head || github.event.pull_request.head.sha || github.sha }}
+        PATHS: ${{ inputs.paths }}
+        NO_VALUES: ${{ inputs.no-values }}
+      run: |
+        report="$RUNNER_TEMP/plcdiff.md"
+        args=(git "$BASE..$HEAD" -f markdown --exit-code)
+        if [ "$NO_VALUES" = "true" ]; then args+=(--no-values); fi
+        # shellcheck disable=SC2206
+        if [ -n "$PATHS" ]; then args+=($PATHS); fi
+        set +e
+        plcdiff "${args[@]}" > "$report"
+        code=$?
+        set -e
+        if [ "$code" -ge 2 ]; then exit "$code"; fi
+        cat "$report" >> "$GITHUB_STEP_SUMMARY"
+        echo "report=$report" >> "$GITHUB_OUTPUT"
+        if [ "$code" -eq 1 ]; then echo "changed=true" >> "$GITHUB_OUTPUT"; else echo "changed=false" >> "$GITHUB_OUTPUT"; fi

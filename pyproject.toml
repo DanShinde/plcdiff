@@ -1,0 +1,74 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "plcdiff"
+dynamic = ["version"]
+description = "Readable git diffs for PLC program exports (Rockwell L5X, PLCopen XML): rung by rung, tag by tag"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+authors = [{ name = "Dan Shinde" }]
+keywords = [
+  "plc", "l5x", "studio-5000", "rslogix", "logix", "plcopen", "iec-61131-3", "codesys",
+  "twincat", "ladder-logic", "structured-text", "git", "diff", "textconv", "industrial",
+  "automation", "version-control",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Manufacturing",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Software Development :: Version Control :: Git",
+  "Topic :: Scientific/Engineering",
+  "Topic :: Utilities",
+  "Typing :: Typed",
+]
+dependencies = []
+
+[project.scripts]
+plcdiff = "plcdiff.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/DanShinde/plcdiff"
+Documentation = "https://github.com/DanShinde/plcdiff#readme"
+Issues = "https://github.com/DanShinde/plcdiff/issues"
+Changelog = "https://github.com/DanShinde/plcdiff/blob/main/CHANGELOG.md"
+
+[dependency-groups]
+dev = ["pytest>=8", "pytest-cov>=5", "ruff>=0.6", "mypy>=1.11"]
+
+[tool.hatch.version]
+path = "src/plcdiff/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = ["src", "tests", "examples", "README.md", "LICENSE", "CHANGELOG.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+packages = ["plcdiff"]
+mypy_path = "src"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E501"]
