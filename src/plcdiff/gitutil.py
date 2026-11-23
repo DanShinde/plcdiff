@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -47,7 +48,7 @@ def install(
         target = (
             Path(attr_path.decode().strip()).expanduser()
             if attr_path.strip()
-            else Path.home() / ".config" / "git" / "attributes"
+            else _config_home() / "git" / "attributes"
         )
     else:
         target = repo_root(cwd) / ".gitattributes"
@@ -66,6 +67,15 @@ def install(
     else:
         done.append(f"{target} already maps {', '.join(patterns)}")
     return done
+
+
+def _config_home() -> Path:
+    """Where git looks for global attributes: $XDG_CONFIG_HOME or $HOME/.config."""
+    xdg = os.environ.get("XDG_CONFIG_HOME")
+    if xdg:
+        return Path(xdg)
+    home = os.environ.get("HOME")
+    return (Path(home) if home else Path.home()) / ".config"
 
 
 @dataclass

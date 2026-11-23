@@ -58,6 +58,7 @@ def repo(tmp_path: Path, examples: Path, monkeypatch: pytest.MonkeyPatch) -> Pat
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("HOME", str(tmp_path))  # keep --global writes in the sandbox
     monkeypatch.setenv("GIT_CONFIG_NOSYSTEM", "1")
+    monkeypatch.delenv("XDG_CONFIG_HOME", raising=False)
 
     def git(*args: str) -> None:
         subprocess.run(["git", *args], check=True, capture_output=True)

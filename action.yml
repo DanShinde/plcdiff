@@ -1,5 +1,5 @@
 name: plcdiff
-description: Rung-by-rung summary of PLC program changes (Rockwell L5X, PLCopen XML) in the job summary
+description: "Rung-by-rung summary of PLC program changes (Rockwell L5X, PLCopen XML) in the job summary"
 author: Dan Shinde
 branding:
   icon: git-pull-request
@@ -7,27 +7,27 @@ branding:
 
 inputs:
   base:
-    description: Base revision (default: the pull request base, or the commit before the push)
+    description: "Base revision (default: the pull request base, or the commit before the push)"
     required: false
     default: ""
   head:
-    description: Head revision (default: the pull request head, or the pushed commit)
+    description: "Head revision (default: the pull request head, or the pushed commit)"
     required: false
     default: ""
   paths:
-    description: Space-separated paths to limit the diff to (default: whole repository)
+    description: "Space-separated paths to limit the diff to (default: whole repository)"
     required: false
     default: ""
   no-values:
-    description: Set to "true" to ignore tag value changes
+    description: "Set to \"true\" to ignore tag value changes"
     required: false
     default: "false"
   working-directory:
-    description: Repository directory (default: the workspace)
+    description: "Repository directory (default: the workspace)"
     required: false
     default: "."
   python-version:
-    description: Python used to run plcdiff
+    description: "Python used to run plcdiff"
     required: false
     default: "3.12"
 
@@ -36,7 +36,7 @@ outputs:
     description: '"true" when PLC program changes were found'
     value: ${{ steps.diff.outputs.changed }}
   report:
-    description: Path of the Markdown report
+    description: "Path of the Markdown report"
     value: ${{ steps.diff.outputs.report }}
 
 runs:
