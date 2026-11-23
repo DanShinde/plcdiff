@@ -3,6 +3,7 @@ name: Release
 # Bump __version__ in src/plcdiff/__init__.py and CHANGELOG.md, push to main,
 # then run this workflow. It builds, publishes to PyPI (trusted publishing),
 # and creates the vX.Y.Z tag and GitHub release.
+# Run it from the Actions tab or with `gh workflow run release.yml`.
 on:
   workflow_dispatch:
 
