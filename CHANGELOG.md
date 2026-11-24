@@ -6,6 +6,16 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Siemens TIA Portal SimaticML exports: blocks (OB, FB, FC, DB), PLC data types and PLC tag
+  tables. LAD/FBD networks are decoded into one statement per output, SCL is compared line by
+  line, and export noise (TIA version, timestamps, `ID`/`UId` numbering) is ignored.
+
+### Fixed
+
+- Summary line pluralizes nouns ending in "y" ("2 properties changed", not "propertys").
+
 ## [0.1.0] - 2026-11-22
 
 ### Added

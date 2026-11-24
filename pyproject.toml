@@ -5,14 +5,14 @@ build-backend = "hatchling.build"
 [project]
 name = "plcdiff"
 dynamic = ["version"]
-description = "Readable git diffs for PLC program exports (Rockwell L5X, PLCopen XML): rung by rung, tag by tag"
+description = "Readable git diffs for PLC program exports (Rockwell L5X, Siemens TIA Portal, PLCopen XML): rung by rung, tag by tag"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.10"
 authors = [{ name = "Dan Shinde" }]
 keywords = [
-  "plc", "l5x", "studio-5000", "rslogix", "logix", "plcopen", "iec-61131-3", "codesys",
+  "plc", "l5x", "studio-5000", "rslogix", "logix", "siemens", "tia-portal", "simaticml", "plcopen", "iec-61131-3", "codesys",
   "twincat", "ladder-logic", "structured-text", "git", "diff", "textconv", "industrial",
   "automation", "version-control",
 ]
