@@ -5,8 +5,8 @@
 [![Python](https://img.shields.io/pypi/pyversions/plcdiff.svg)](https://pypi.org/project/plcdiff/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-**Readable git diffs for PLC program exports.** Rockwell Studio 5000 `.L5X` and PLCopen XML
-(CODESYS, TwinCAT, Beremiz, Machine Expert, ...) shown rung by rung, tag by tag, line by line,
+**Readable git diffs for PLC program exports.** Rockwell Studio 5000 `.L5X`, Siemens TIA Portal
+SimaticML and PLCopen XML (CODESYS, TwinCAT, Beremiz, Machine Expert, ...) shown rung by rung, tag by tag, line by line,
 instead of as a wall of XML.
 
 ![git diff of an L5X export next to plcdiff output](https://raw.githubusercontent.com/DanShinde/plcdiff/main/docs/demo.png)
@@ -48,7 +48,7 @@ From then on `git diff`, `git log -p`, `git show` and GUI clients that honour te
 readable view. Commit `.gitattributes` so the whole team gets the mapping (each person runs
 `plcdiff install` once, or `plcdiff install --global` for every repository).
 
-PLCopen exports usually end in `.xml`, so map them explicitly:
+PLCopen and TIA Portal (SimaticML) exports usually end in `.xml`, so map them explicitly:
 
 ```console
 plcdiff install --pattern "plc/*.xml"
@@ -105,13 +105,14 @@ Outputs: `changed` (`"true"`/`"false"`) and `report` (path of the Markdown file)
 | Format | Covered |
 | --- | --- |
 | Rockwell `.L5X` (Studio 5000 / RSLogix 5000), full project or partial export | controller properties, UDTs, modules (catalog, revision, IP address, inhibit), AOIs (parameters, local tags, routines), controller and program tags with values, aliases, produced/consumed, programs, tasks, ladder (RLL) rungs and comments, Structured Text; FBD and SFC routines as one line per element; source-protected routines reported as such |
+| Siemens TIA Portal SimaticML (`.xml` from Openness or an export add-in, one block per file) | OB, FB, FC, global and instance DBs, PLC data types (UDTs), PLC tag tables with user constants; block attributes, interface members with comments and start values; LAD and FBD networks decoded into one statement per coil, box or call (`#Run := (#Start OR #Run) AND NOT #Stop`), SCL line by line; network titles and comments kept apart from the logic. Export noise (TIA version, export time, `ID`/`UId` numbering, compile dates) is ignored |
 | PLCopen TC6 XML (`tc6_0200`, `tc6_0201`) | data types (struct, enum, array, subrange, pointer, string), POU interfaces with initial values, ST and IL bodies, actions, transitions, CODESYS methods and global variable lists, configurations, resources, tasks, global variables; LD, FBD and SFC as one line per element with layout removed |
 
 Known limits in this release, all good first contributions:
 
-- LD/FBD **wiring** (which contact connects to which coil) is not compared yet, only the
-  elements and their variables.
-- Siemens TIA Portal (SimaticML / Openness XML) and Rockwell `.L5K` are not supported yet.
+- PLCopen LD/FBD **wiring** (which contact connects to which coil) is not compared yet, only
+  the elements and their variables. (TIA Portal LAD/FBD networks are decoded with their wiring.)
+- Rockwell `.L5K` and TIA Portal GRAPH, STL and plain `.scl` source files are not supported yet.
 - The sample exports in `examples/` are hand-written to match the published schemas. Real-world
   exports vary between versions; if something parses oddly, please open an issue with a
   (sanitized) file.
@@ -141,8 +142,8 @@ print(render(new))  # the textconv view
 
 Issues and pull requests are welcome, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-Not affiliated with Rockwell Automation or PLCopen. Studio 5000 and RSLogix are trademarks of
-Rockwell Automation, Inc.
+Not affiliated with Rockwell Automation, Siemens or PLCopen. Studio 5000 and RSLogix are
+trademarks of Rockwell Automation, Inc. TIA Portal and SIMATIC are trademarks of Siemens AG.
 
 ## License
 

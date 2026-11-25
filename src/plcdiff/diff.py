@@ -167,6 +167,8 @@ def summarize(diffs: list[BlockDiff]) -> str:
             counts[(c.unit, c.op)] = counts.get((c.unit, c.op), 0) + 1
     parts = []
     for (unit, op), n in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0])):
-        noun = unit.lower() + ("s" if n != 1 else "")
+        noun = unit.lower()
+        if n != 1:
+            noun = noun[:-1] + "ies" if noun.endswith("y") else noun + "s"
         parts.append(f"{n} {noun} {op}")
     return ", ".join(parts)

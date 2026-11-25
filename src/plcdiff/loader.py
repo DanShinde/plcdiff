@@ -5,7 +5,7 @@ from __future__ import annotations
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from plcdiff import l5x, plcopen
+from plcdiff import l5x, plcopen, simaticml
 from plcdiff._xml import local
 from plcdiff.model import Document
 
@@ -30,6 +30,8 @@ def loads(data: bytes | str, name: str = "<data>", include_values: bool = True) 
         return l5x.parse(root, include_values)
     if plcopen.is_plcopen(root):
         return plcopen.parse(root, include_values)
+    if simaticml.is_simaticml(root):
+        return simaticml.parse(root, include_values)
     raise UnsupportedFormat(f"{name}: unknown root element <{local(root.tag)}>")
 
 
