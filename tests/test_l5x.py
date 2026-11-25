@@ -160,7 +160,7 @@ def test_add_on_instruction() -> None:
     assert blocks["AOI Valve / Routine Logic (RLL)"].entries[0].text == "XIC(Open)TON(Timer,?,?);"
 
 
-def test_fbd_routine_uses_generic_lines() -> None:
+def test_fbd_routine_is_decoded() -> None:
     body = """<Programs><Program Name="P" MainRoutineName="F"><Routines>
     <Routine Name="F" Type="FBD"><FBDContent SheetSize="Letter"><Sheet Number="1">
     <IRef ID="0" X="100" Y="100" Operand="Level" HideDesc="false"/>
@@ -168,8 +168,7 @@ def test_fbd_routine_uses_generic_lines() -> None:
     </Sheet></FBDContent></Routine></Routines></Program></Programs>"""
     doc = loads(l5x(body))
     lines = [e.text for e in doc.by_title()["Program P / Routine F (FBD)"].entries]
-    assert lines[0] == 'FBDContent SheetSize="Letter"'
-    assert any('Operand="ADD_01"' in line and line.startswith("    Block") for line in lines)
+    assert lines == ["SHEET 1", "ADD ADD_01()"]
 
 
 def test_protected_routine() -> None:

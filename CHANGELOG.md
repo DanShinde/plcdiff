@@ -16,6 +16,10 @@ All notable changes to this project are documented here. The format follows
   condition before and after (`OTE(Run) when (Start OR Run) AND NOT Stop`), in text, Markdown
   and JSON output (`logic` field).
 
+- Rockwell FBD routines are decoded from their wiring into one statement per output instead
+  of one line per drawn element, so moving a block on the sheet is no longer a change and a
+  rewired input shows as a changed expression.
+
 ### Fixed
 
 - Summary line pluralizes nouns ending in "y" ("2 properties changed", not "propertys").

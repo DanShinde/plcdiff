@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import xml.etree.ElementTree as ET
 
+from plcdiff import fbd
 from plcdiff._xml import child, children, local, oneline, text
 from plcdiff.model import Block, Document, Entry
 
@@ -238,6 +239,10 @@ def _routines(doc: Document, owner: ET.Element, head: tuple[str, ...]) -> None:
             block = doc.block(*head, title, kind="sequence", unit="Line")
             for line in children(st, "Line"):
                 block.add("".join(line.itertext()).strip("\r\n").rstrip())
+        elif (sheets := child(r, "FBDContent")) is not None:
+            block = doc.block(*head, title, kind="sequence", unit="Line")
+            for statement, note in fbd.decode(sheets):
+                block.add(statement, note=note)
         elif child(r, "EncodedData") is not None or child(r, "EncryptedContent") is not None:
             block = doc.block(*head, title, kind="sequence", unit="Line")
             block.add("(source protected)")
