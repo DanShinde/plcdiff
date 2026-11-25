@@ -9,6 +9,7 @@ from typing import Literal
 
 from plcdiff.model import Block, Document, Entry
 from plcdiff.render import ordered
+from plcdiff.rll import logic_delta
 
 Op = Literal["added", "removed", "changed"]
 
@@ -55,6 +56,12 @@ class Change:
             if tag in ("replace", "insert"):
                 added += b[j1:j2]
         return added, removed
+
+    def logic_delta(self) -> list[tuple[str, str | None, str | None]]:
+        """For changed ladder rungs: outputs whose condition changed (output, old, new)."""
+        if self.unit != "Rung" or self.old is None or self.new is None:
+            return []
+        return logic_delta(self.old.text, self.new.text)
 
 
 @dataclass
