@@ -5,7 +5,7 @@ from plcdiff.loader import UnsupportedFormat, load, loads
 from plcdiff.model import Block, Document, Entry
 from plcdiff.render import render
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
     "Block",
