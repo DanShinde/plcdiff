@@ -58,6 +58,17 @@ def _change_lines(c: Change) -> list[tuple[str, str]]:
     return out
 
 
+def _logic_lines(c: Change) -> list[tuple[str, str]]:
+    """(sign, text) pairs: the condition of each output whose logic changed on a rung."""
+    out: list[tuple[str, str]] = []
+    for output, old, new in c.logic_delta():
+        if old is not None:
+            out.append(("-", f"{output} when {old}"))
+        if new is not None:
+            out.append(("+", f"{output} when {new}"))
+    return out
+
+
 def text_report(diffs: list[BlockDiff], old: str, new: str, color: bool = False) -> str:
     st = Style(color)
     out = [st.bold(f"plcdiff {old} -> {new}"), st.dim(summarize(diffs)), ""]
@@ -78,6 +89,12 @@ def text_report(diffs: list[BlockDiff], old: str, new: str, color: bool = False)
             for sign, line in _change_lines(c):
                 p = {"+": st.green, "-": st.red, " ": st.dim}[sign]
                 out.append("      " + p(f"{sign} {line}"))
+            logic = _logic_lines(c)
+            if logic:
+                out.append("      " + st.dim("logic:"))
+                for sign, line in logic:
+                    p = {"+": st.green, "-": st.red}[sign]
+                    out.append("      " + p(f"{sign} {line}"))
         out.append("")
     return "\n".join(out).rstrip() + "\n"
 
@@ -92,6 +109,10 @@ def markdown_report(diffs: list[BlockDiff], old: str, new: str) -> str:
         for c in d.changes:
             out.append(f"@@ {c.name} ({c.op}) @@")
             out += [f"{sign}{line}" for sign, line in _change_lines(c)]
+            logic = _logic_lines(c)
+            if logic:
+                out.append("# logic:")
+                out += [f"{sign}{line}" for sign, line in logic]
         out.append("```")
         out.append("")
     return "\n".join(out)
@@ -118,6 +139,15 @@ def json_report(diffs: list[BlockDiff], old: str, new: str) -> str:
                         "name": c.name,
                         "old": _entry_json(c.old),
                         "new": _entry_json(c.new),
+                        **(
+                            {
+                                "logic": [
+                                    {"output": o, "old": a, "new": b} for o, a, b in c.logic_delta()
+                                ]
+                            }
+                            if c.logic_delta()
+                            else {}
+                        ),
                     }
                     for c in d.changes
                 ],

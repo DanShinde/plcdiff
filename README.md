@@ -17,7 +17,9 @@ coordinates. `plcdiff` turns the export into a stable, line-oriented view and co
 so a review shows what an engineer actually changed:
 
 - **Rungs** compared as ladder text, with the instructions that were added or removed
-  (`~ Rung 0  +XIO(EStop)`). Inserting a rung does not renumber every rung below it.
+  (`~ Rung 0  +XIO(EStop)`) and, for each output whose logic changed, its condition before and
+  after (`+ OTE(Running) when (StartPB OR Running) AND StopPB AND NOT EStop`). Inserting a rung
+  does not renumber every rung below it.
 - **Structured Text** compared line by line, indentation kept.
 - **Tags, UDT members, AOI parameters, POU variables** compared by name, so reordering is
   not a change, plus **tag values** (timer presets, setpoints, recipe arrays) flattened to

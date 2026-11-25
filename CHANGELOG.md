@@ -12,6 +12,10 @@ All notable changes to this project are documented here. The format follows
   tables. LAD/FBD networks are decoded into one statement per output, SCL is compared line by
   line, and export noise (TIA version, timestamps, `ID`/`UId` numbering) is ignored.
 
+- Ladder rung changes show the logic: for each output instruction whose condition changed, the
+  condition before and after (`OTE(Run) when (Start OR Run) AND NOT Stop`), in text, Markdown
+  and JSON output (`logic` field).
+
 ### Fixed
 
 - Summary line pluralizes nouns ending in "y" ("2 properties changed", not "propertys").
